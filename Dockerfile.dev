@@ -17,9 +17,13 @@ RUN sh -c "ls -lA node_modules"
 
 COPY . .
 
+RUN sh -c "ls -lA"
+
+ENV PORT 8888
+
 # This does not actually expose anything, its only meant for reference purpose
-EXPOSE 9999
+EXPOSE $PORT
 
 # WHen you start container this command will get executed
 # You can override this during runtime if you want
-CMD ["yarn", "devrun"]
+CMD ["yarn", "dev:run"]

@@ -5,12 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "devrun": "nodemon index.js"
+    "export-lockfiles": "docker run -it --rm -v ${PWD}:/work -v /work/node_modules -w /work node:12.4.0-alpine /bin/sh -c 'yarn'",
+    "dev:sh": "docker run -it --rm -v ${PWD}:/work -v /work/node_modules -w /work node:12.4.0-alpine /bin/sh -c ",
+    "dev:run": "nodemon --inspect=0.0.0.0 --exec babel-node index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babel/cli": "^7.14.3",
+    "@babel/core": "^7.14.3",
+    "@babel/node": "^7.14.2",
+    "@babel/preset-env": "^7.14.4",
     "express": "^4.17.1"
   },
   "devDependencies": {

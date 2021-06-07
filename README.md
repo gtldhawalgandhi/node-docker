@@ -1,41 +1,56 @@
-# Day1
+# Day2
 
-- Run basic NodeJS code on docker
-- VSCode extensions
-  - Remote Development
-  - Docker
-  - Thunder client (Like Postman)
-  
-- Basic setup inside empty workspace
-  - npm init -y
-  - npm install -g yarn
-  - yarn add express
-  - yarn add -D nodemon
-  - Write basic NodeJS service using express
-  - Run code on host machine
-  - Run code on docker
+- Where is yarn coming from used within our Dockerfile?
+
+    https://github.com/nodejs/docker-node/blob/main/12/alpine3.12/Dockerfile
+
+- Export lock files by running shell commands via docker on a bind mounted volume
+
+      yarn export-lockfiles
+
+- Change docker behavior via ENV vars .. NodeJS to accept PORT via ENV var
+- ENV in dockerfile
+
+      ENV PORT 9999
+
+      EXPOSE $PORT
+
+      docker run --env PORT=7777 ......
+
+- Run Dev environment with nodemon inspector to debug our Node app
+
+      nodemon --inspect=0.0.0.0 index.js
+
+    * Update launch.json file to tell VSCode how to debug our NodeJS app
+
+    * Expose debug port 9229
+
+- Convert Docker commands into Docker Compose
+
+    * Ctrl Shift p -> Add Docker Compose files to Workspace
+
+    * NODE_ENV=development
+
+    * Expose nodemon debug port
+
+- Building images using docker compose
+
+    
+    ### Using Docker VSCode extension
+    * Right Click on docker-compose.dev.yml file and "Compose Up"
+
+    ### Or using CLI
+      docker-compose -f docker-compose.dev.yml up --build
+
+- Convert our CommonJS NodeJS app to use ES Next syntax using babel
+
+      yarn dev:sh 'yarn add @babel/node @babel/core @babel/cli @babel/preset-env'
+
+    * Add .babelrc config to our root workspace
+
+    * Tell nodemon to use babel-node instead of node
+
       
-        # Does not do anything since we have not provided an entry point js file
-        docker run node:12.4.0-alpine
-
-        # Does not do anything either since there is no node_modules inside container
-        docker run node:12.4.0-alpine index.js
-        
-        # Mount our host machine onto the container and this works, but host machine cannot access port 9999
-        docker run -v ${PWD}:/work -w /work node:12.4.0-alpine /bin/sh -c "yarn && node index.js"
-        
-        # For Windows machine (Does this work?)
-        docker run -v %cd%:/work -w /work node:12.4.0-alpine /bin/sh -c "yarn && node index.js"
-
-        # 
-        docker run -v ${PWD}:/work -w /work  -p 10000:9999   node:12.4.0-alpine /bin/sh -c "yarn && node index.js"
-  
-- Build custom Docker image
-  - Create Dockerfile
-    - Ctr Shift P -> Add Docker Files to workspace
-  - Build command  
-    - Right click -> Build Image
-    - docker build -t nodeappimage:v1 .
-
-
-
+          nodemon --inspect=0.0.0.0 --exec babel-node index.js
+    
+- Ensure we export all lock files back into the host machine for version control purpose

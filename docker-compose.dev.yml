@@ -1,0 +1,19 @@
+version: '3.4'
+
+services:
+  node-app:
+    image: nodeappimage-dev:v1
+    container_name: nodeapp
+    build:
+      context: .
+      dockerfile: ./Dockerfile.dev
+    environment:
+      NODE_ENV: development
+      PORT: 8888
+    ports:
+      - 10000:8888
+      - 9229:9229
+    volumes:
+      - ${PWD}:/work:rw
+      - /work/node_modules
+    command: ["yarn", "dev:run"]
