@@ -1,19 +1,50 @@
 version: '3.4'
 
 services:
+  mongo-ui:
+    image: gtldhawalgandhi/dbgate:dev
+    container_name: mongo_ui
+    depends_on: 
+      - 'mongo-db'
+    ports:
+      - 3009:3000
+
+  mongo-db:
+    image: mongo:4.4.6-bionic
+    container_name: mongo_db
+    restart: unless-stopped
+    environment: 
+      MONGO_INITDB_ROOT_USERNAME: myuser
+      MONGO_INITDB_ROOT_PASSWORD: mypass
+      MONGO_INITDB_DATABASE: node_app_db
+      MONGO_INITDB_USERNAME: node_app_user
+      MONGO_INITDB_PASSWORD: node_app_pass
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+      - ${PWD}/backend/scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
+
   node-app:
     image: nodeappimage-dev:v1
-    container_name: nodeapp
+    container_name: node_app
     build:
-      context: .
+      context: ./backend
       dockerfile: ./Dockerfile.dev
     environment:
       NODE_ENV: development
       PORT: 8888
+      DB: 'mongodb://node_app_user:node_app_pass@mongo_db:27017/node_app_db'
+      # Do not put senstive info in docker-compose or similar files. This is for dev purpose only
+    depends_on: 
+      - 'mongo-ui'
     ports:
       - 10000:8888
       - 9229:9229
     volumes:
-      - ${PWD}:/work:rw
+      - ${PWD}/backend:/work:rw
       - /work/node_modules
     command: ["yarn", "dev:run"]
+
+volumes:
+  mongodb_data:
