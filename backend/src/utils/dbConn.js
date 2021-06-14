@@ -1,14 +1,16 @@
 import mongoose from 'mongoose';
-import { config } from '../config';
+import { config } from '@app/config';
 
-export default async (db) => {
+export default async () => {
   try {
     const conn = await mongoose.connect(config.db, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
+
     return conn;
-  } catch (err) {
-    throw new Error('MongoDB connection err: ' + err);
+  }
+  catch (err) {
+    throw new Error(`MongoDB connection err: ${  err}`);
   }
 };

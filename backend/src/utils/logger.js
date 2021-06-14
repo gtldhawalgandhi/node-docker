@@ -1,5 +1,5 @@
 import winston from 'winston';
-import { config } from '../config';
+import { config } from '@app/config';
 
 export default class Logger {
   constructor(module, jsFile, logFile = 'node-app.log') {
@@ -23,15 +23,15 @@ export default class Logger {
   }
 
   silly(arg){
-      this.logger.silly(`${this.prefix}: ${arg}`)
+    this.logger.silly(`${this.prefix}: ${arg}`);
   }
   debug(arg){
-      this.logger.debug(`${this.prefix}: ${arg}`)
+    this.logger.debug(`${this.prefix}: ${arg}`);
   }
   info(arg){
-      this.logger.info(`${this.prefix}: ${arg}`)
+    this.logger.info(`${this.prefix}: ${arg}`);
   }
   error(arg){
-      this.logger.error(`${this.prefix}: ${arg}`)
+    this.logger.error(`${this.prefix}: ${arg}`);
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "node",
+  "name": "@app/backend",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -13,20 +13,26 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@babel/cli": "^7.14.3",
-    "@babel/core": "^7.14.3",
-    "@babel/node": "^7.14.2",
-    "@babel/preset-env": "^7.14.4",
     "bcrypt": "^5.0.1",
     "core-js": "^3.2.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
+    "express-validator": "^6.11.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.13",
     "winston": "^3.3.3"
   },
   "devDependencies": {
+    "@babel/cli": "^7.14.3",
+    "@babel/core": "^7.14.3",
+    "@babel/eslint-parser": "^7.12.1",
+    "@babel/node": "^7.14.2",
+    "@babel/preset-env": "^7.14.4",
+    "babel-plugin-module-resolver": "^4.1.0",
+    "eslint": "^7.27.0",
+    "eslint-loader": "^4.0.2",
+    "eslint-plugin-security": "^1.4.0",
     "nodemon": "^2.0.7"
   }
 }

@@ -1,0 +1,33 @@
+version: '3'
+
+dotenv: ['.env']
+
+tasks:
+  compose-up:
+    dir: '.'
+    cmds:
+      - docker-compose -f ./docker-compose.dev.yml -f ./docker-compose.yml up -d {{.CLI_ARGS}}
+      - docker attach ${NODE_APP_CONTAINER_NAME}
+  rebuild-node-app:
+    dir: '.'
+    cmds:
+      - docker-compose -f ./docker-compose.dev.yml -f ./docker-compose.yml up -d --force-recreate -V --no-deps {{.CLI_ARGS}} node-app
+      - docker attach ${NODE_APP_CONTAINER_NAME}
+  rebuild-all:
+    dir: '.'
+    cmds:
+      - docker-compose -f ./docker-compose.dev.yml -f ./docker-compose.yml up -d --force-recreate -V --build {{.CLI_ARGS}}
+      - docker attach ${NODE_APP_CONTAINER_NAME}
+  compose-down:
+    dir: '.'
+    cmds:
+      - docker-compose -f ./docker-compose.dev.yml -f ./docker-compose.yml down
+  remove-all:
+    dir: '.'
+    cmds:
+      - docker stop ${MONGO_UI_CONTAINER_NAME} ${MONGO_DB_CONTAINER_NAME} ${NODE_APP_CONTAINER_NAME}
+      - docker rm ${MONGO_UI_CONTAINER_NAME} ${MONGO_DB_CONTAINER_NAME} ${NODE_APP_CONTAINER_NAME}
+  lint:
+    dir: 'backend'
+    cmds:
+      - node_modules/.bin/eslint -c .eslintrc .
