@@ -1,106 +1,142 @@
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
-import User from '../models/user';
-import Logger from '../utils/logger';
+import {
+  getAll,
+  createOne,
+  findById,
+  queryFilterSort,
+  deleteById,
+  putImage,
+  login,
+  register,
+} from '@app/services/user';
 
-const logger = new Logger('Controller', 'user.js');
+import Logger from '@app/utils/logger';
 
-const getAll = async () => {
-  try {
-    return await User.find();
-  } catch (err) {
-    throw new Error(`getAll Err: ${err}`);
-  }
-};
+const logger = new Logger('Routes', 'user.js');
 
-const createOne = async (data) => {
-  try {
-    await User.create(data);
-  } catch (err) {
-    throw new Error(`createOne Err: ${err}`);
-  }
-};
-
-const findByEmail = async (email) => {
-  try {
-    return await User.find(email);
-  } catch (err) {
-    throw new Error(`findByEmail Err: ${err}`);
-  }
-};
-
-const findById = async (id) => {
-  try {
-    return await User.findById(id);
-  } catch (err) {
-    throw new Error(`findById Err: ${err}`);
-  }
-};
-
-const deleteById = async (id) => {
-  try {
-    return await User.findByIdAndDelete(id, { active: false });
-  } catch (err) {
-    throw new Error(`deleteById Err: ${err}`);
-  }
-};
-
-const queryFilterSort = async (q) => {
-  const queryCopyObj = { ...q };
-
-  delete queryCopyObj.sort;
-
-  const queryStr = JSON.stringify(queryCopyObj);
-  const replaceQueryStr = queryStr.replace(/\b(gt|lt|lte|gte)\b/g, (m) => `$${m}`);
+const getUser = async (req, res) => {
+  logger.debug('User GET All');
 
   try {
-    let query = User.find(JSON.parse(replaceQueryStr));
-    if (q.sort) {
-      query = query.sort(q.sort);
+    const keys = Object.keys(req.query);
+    if (keys.length) {
+      logger.silly(JSON.stringify(req.query, null, 2));
+      const result = await queryFilterSort(req.query);
+      res.end(JSON.stringify(result, null, 2));
+
+      return;
     }
-    return await query;
-  } catch (err) {
-    throw new Error(`getAll Err: ${err}`);
+    logger.info(JSON.stringify(req.query));
+    const users = await getAll();
+    res.end(JSON.stringify(users, null, 2));
+  }
+  catch (err) {
+    res.status(500).json({
+      status: 'failed',
+      error: err,
+    });
   }
 };
 
-const postImage = async (id, img) => {
+const createUser = async (req, res) => {
   try {
-    return await User.findByIdAndUpdate(id, { img });
-  } catch (err) {
-    throw new Error(`getAll Err: ${err}`);
+    const data = req.user;
+    logger.info(JSON.stringify(data, null, 2));
+    await createOne(data);
+    res.end(JSON.stringify({ status: 'ok' }));
+  }
+  catch (err) {
+    res.status(500).json({
+      status: 'failed',
+      error: err,
+    });
   }
 };
 
-const register = async (body) => {
-  const data = { ...body };
-  data.password = await bcrypt.hashSync(data.password, 10);
-  await createOne(data);
+const findUserById = async (req, res) => {
+  try {
+    logger.info(req.params.id);
+    const result = await findById(req.params.id);
+    res.end(JSON.stringify(result, null, 2));
+  }
+  catch (err) {
+    res.end(JSON.stringify(err));
+  }
 };
 
-const login = async (body) => {
-  const data = { ...body };
+const deleteUserById = async (req, res) => {
+  await deleteById(req.params.id);
+  res.end(JSON.stringify({ status: 'deleted' }, null, 2));
+};
+
+const storeUserImage = async (req, res) => {
+  const { id } = req.params;
+  const files = [];
+  const arr = Object.entries(req.files);
+  for (const [k, v] of arr) {
+    const data = v.data && Buffer.from(v.data).toString('base64');
+    files.push({
+      id,
+      name: v.name,
+      data,
+    });
+  }
+
+  const firstImg = files.length && files[0];
   try {
-    const user = await findByEmail({ email: data.email });
-    const isAuth = await bcrypt.compareSync(data.password, user[0].password);
-    if (isAuth) {
-      return jwt.sign({ id: user.id }, 'randomTokenSecretKey123');
+    await putImage(id, firstImg.data);
+
+    res.json({ ok: true, img: firstImg.data });
+  }
+  catch (err) {
+    res.status(500).json({
+      error: err,
+    });
+  }
+};
+
+
+const registerUser = async (req, res) => {
+  try {
+    if (!req.body.email || !req.body.password) {
+      res.status(401).json({
+        err: 'Email and Password are required',
+      });
+
+      return;
     }
-    return false;
-  } catch (err) {
-    logger.error(err);
-    return false;
+    await register(req.body);
+    res.json({ status: 'ok' });
   }
+  catch (err) {
+    res.end(JSON.stringify({err: err.message}));
+  }
+};
+
+const loginUser = async (req, res) => {
+  if (!req.body.email && !req.body.password) {
+    res.status(401).json({
+      err: 'Email and Password are required',
+    });
+  }
+  const token = await login(req.body);
+  if (token) {
+    res.header('authorization', token).json({
+      status: 'ok',
+    });
+
+    return;
+  }
+  res.status(401).json({
+    err: 'Login failed!',
+  });
 };
 
 export {
-  getAll,
-  createOne,
-  findByEmail,
-  findById,
-  deleteById,
-  queryFilterSort,
-  postImage,
-  register,
-  login
+  getUser,
+  createUser,
+  findUserById,
+  deleteUserById,
+  storeUserImage,
+  registerUser,
+  loginUser
 };
