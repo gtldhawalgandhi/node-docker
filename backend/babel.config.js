@@ -5,11 +5,12 @@ module.exports = {
       {
         useBuiltIns: 'usage',
         corejs: 3,
-        targets: { node: '14' }
+        targets: { node: '12.13' }
       }
     ]
   ],
   plugins: [
+    "@babel/plugin-transform-destructuring",
     [
       'module-resolver',
       {

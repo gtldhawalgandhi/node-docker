@@ -39,7 +39,6 @@ const getPosts = async (req, res, next) => {
 };
 
 const createPost = async (req, res, next) => {
-  console.log(`Req: ${JSON.stringify(req.userId, null, 2)}`);
   try {
 
     const { title, content } = req?.body;

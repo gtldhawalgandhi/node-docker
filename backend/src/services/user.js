@@ -90,7 +90,7 @@ const login = async (body) => {
   const data = { ...body };
   try {
     const user = await findByEmail({ email: data.email });
-    const isAuth = await bcrypt.compareSync(data.password, user[0].password);
+    const isAuth = await bcrypt.compareSync(data.password, data.password);
     if (isAuth) {
       return jwt.sign({ id: user?.[0]?._id?.toString() }, 'randomTokenSecretKey123', { expiresIn: '2h' });
     }

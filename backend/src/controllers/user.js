@@ -72,7 +72,7 @@ const storeUserImage = async (req, res) => {
   const { id } = req.params;
   const files = [];
   const arr = Object.entries(req.files);
-  for (const [k, v] of arr) {
+  for (const [, v] of arr) {
     const data = v.data && Buffer.from(v.data).toString('base64');
     files.push({
       id,
@@ -108,7 +108,7 @@ const registerUser = async (req, res) => {
     res.json({ status: 'ok' });
   }
   catch (err) {
-    res.end(JSON.stringify({err: err.message}));
+    res.end(JSON.stringify({ err: err.message }));
   }
 };
 
@@ -117,6 +117,8 @@ const loginUser = async (req, res) => {
     res.status(401).json({
       err: 'Email and Password are required',
     });
+
+    return;
   }
   const token = await login(req.body);
   if (token) {

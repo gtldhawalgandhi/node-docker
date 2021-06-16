@@ -25,7 +25,7 @@ services:
       - 27017:27017
     volumes:
       - mongodb_data:/data/db
-      - ${PWD}/backend/scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
+      - ./backend/scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
     networks:
       - docker_app_network
 
@@ -39,14 +39,13 @@ services:
       NODE_ENV: development
       PORT: ${NODE_APP_CONTAINER_NAME_PORT}
       DB: ${MONGODB_URL}
-      # Do not put senstive info in docker-compose or similar files. This is for dev purpose only
     depends_on: 
       - 'mongo-ui'
     ports:
       - 10000:${NODE_APP_CONTAINER_NAME_PORT}
       - 9229:9229
     volumes:
-      - ${PWD}/backend:/work:rw
+      - ./backend:/work:rw
       - /work/node_modules
     networks:
       - docker_app_network
