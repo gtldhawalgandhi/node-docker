@@ -1,5 +1,3 @@
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
 import User from '@app/models/user';
 import Logger from '@app/utils/logger';
 
@@ -80,22 +78,15 @@ const putImage = async (id, img) => {
   }
 };
 
-const register = async (body) => {
-  const data = { ...body };
-  data.password = await bcrypt.hashSync(data.password, 10);
+const register = async (data) => {
   await createOne(data);
 };
 
 const login = async (body) => {
   const data = { ...body };
   try {
-    const user = await findByEmail({ email: data.email });
-    const isAuth = await bcrypt.compareSync(data.password, data.password);
-    if (isAuth) {
-      return jwt.sign({ id: user?.[0]?._id?.toString() }, 'randomTokenSecretKey123', { expiresIn: '2h' });
-    }
+    return await findByEmail({ email: data.email });
 
-    return false;
   }
   catch (err) {
     logger.error(err);

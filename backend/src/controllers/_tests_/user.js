@@ -1,6 +1,16 @@
 import { loginUser, storeUserImage } from '@app/controllers/user';
 import { login, putImage } from '@app/services/user';
+import  { scryptSync }  from 'crypto';
+import jwt from 'jsonwebtoken';
+
 jest.mock('@app/services/user');
+jest.mock('crypto');
+jest.mock('jsonwebtoken');
+
+beforeEach(() => {
+  scryptSync.mockImplementation(() => 'password');
+  jwt.sign.mockImplementation(() => true);
+});
 
 describe('storeUserImage', () => {
 
@@ -32,12 +42,11 @@ describe('storeUserImage', () => {
         id: '123'
       },
       files: {
-        a: { data: 'b'}
+        a: { data: 'b' }
       }
     };
 
     storeUserImage(req, res);
-
   });
 });
 
@@ -99,9 +108,12 @@ describe('loginUser', () => {
     loginUser(req, res);
   });
 
-  test('Auth success', (done) => {
+  test('Auth_success', (done) => {
 
-    login.mockImplementation(() => 'valid');
+    login.mockImplementation(() => ([{
+      password: 'password',
+      _id: 'Id123'
+    }]));
 
     const req = {
       body: {
@@ -116,7 +128,6 @@ describe('loginUser', () => {
         return this;
       },
       json: (input = {}) => {
-
         if (input.status === 'ok') {
           done();
         }

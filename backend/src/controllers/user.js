@@ -8,8 +8,10 @@ import {
   login,
   register,
 } from '@app/services/user';
+import jwt from 'jsonwebtoken';
 
 import Logger from '@app/utils/logger';
+import { getHash } from '@app/utils/password';
 
 const logger = new Logger('Routes', 'user.js');
 
@@ -104,7 +106,9 @@ const registerUser = async (req, res) => {
 
       return;
     }
-    await register(req.body);
+    const data = { ...req.body };
+    data.password = await getHash(data.password);
+    await register(data);
     res.json({ status: 'ok' });
   }
   catch (err) {
@@ -120,13 +124,18 @@ const loginUser = async (req, res) => {
 
     return;
   }
-  const token = await login(req.body);
-  if (token) {
-    res.header('authorization', token).json({
-      status: 'ok',
-    });
+  const user = await login(req.body);
+  if (user?.[0]?.password) {
+    const passMatched = getHash(req?.body?.password) === user?.[0]?.password;
+    if (passMatched) {
+      const token = jwt.sign({ id: user?.[0]?._id?.toString() }, 'randomTokenSecretKey123', { expiresIn: '2h' });
 
-    return;
+      res.header('authorization', token).json({
+        status: 'ok',
+      });
+
+      return;
+    }
   }
   res.status(401).json({
     err: 'Login failed!',
