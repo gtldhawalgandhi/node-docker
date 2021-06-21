@@ -1,9 +1,9 @@
-import { loginUser, storeUserImage } from '@app/controllers/user';
-import { login, putImage } from '@app/services/user';
+import { loginUser, storeUserImage } from '@app/backend/src/controllers/user';
+import { login, putImage } from '@app/backend/src/services/user';
 import  { scryptSync }  from 'crypto';
 import jwt from 'jsonwebtoken';
 
-jest.mock('@app/services/user');
+jest.mock('@app/backend/src/services/user');
 jest.mock('crypto');
 jest.mock('jsonwebtoken');
 

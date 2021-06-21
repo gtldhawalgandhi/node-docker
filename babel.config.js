@@ -1,3 +1,5 @@
+const path = require('path')
+
 module.exports = {
   presets: [
     [
@@ -15,7 +17,7 @@ module.exports = {
       'module-resolver',
       {
         alias: {
-          '@app': './src'
+          '@app/backend/src': path.resolve(__dirname, 'packages/backend/src')
         }
       }
     ]

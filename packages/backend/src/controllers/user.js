@@ -7,11 +7,11 @@ import {
   putImage,
   login,
   register,
-} from '@app/services/user';
+} from '@app/backend/src/services/user';
 import jwt from 'jsonwebtoken';
 
-import Logger from '@app/utils/logger';
-import { getHash } from '@app/utils/password';
+import Logger from '@app/backend/src/utils/logger';
+import { getHash } from '@app/backend/src/utils/password';
 
 const logger = new Logger('Routes', 'user.js');
 

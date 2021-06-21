@@ -33,7 +33,7 @@ services:
     image: nodeappimage-dev:v1
     container_name: ${NODE_APP_CONTAINER_NAME}
     build:
-      context: ./backend
+      context: ./
       dockerfile: ./Dockerfile.dev
     environment:
       NODE_ENV: development
@@ -46,8 +46,7 @@ services:
       - 10000:${NODE_APP_CONTAINER_NAME_PORT}
       - 9229:9229
     volumes:
-      - ./backend:/work:rw
-      - /work/node_modules
+      - ./:/work:rw
     networks:
       - docker_app_network
     command: ["yarn", "dev:run"]

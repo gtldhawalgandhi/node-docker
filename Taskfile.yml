@@ -11,15 +11,23 @@ tasks:
       - docker-compose -f ./docker-compose.dev.yml up -d {{.CLI_ARGS}}
       - docker attach ${NODE_APP_CONTAINER_NAME}
   
-  rebuild-node-app:
-    deps: ['install-deps']
+  remove-node-image:
     dir: '.'
     cmds:
+      - docker rmi -f nodeappimage-dev:v1
+  
+  rebuild-node-app:
+    deps: ['install-deps']
+    ignore_error: true
+    dir: '.'
+    cmds:
+      - task: remove-node-image
       - docker-compose -f ./docker-compose.dev.yml up -d --force-recreate -V --no-deps node-app
       - docker attach ${NODE_APP_CONTAINER_NAME}
   
   rebuild-all:
     dir: '.'
+    ignore_error: true
     deps: ['install-deps']
     cmds:
       - docker-compose -f ./docker-compose.dev.yml up -d --force-recreate -V --build {{.CLI_ARGS}}
@@ -51,16 +59,16 @@ tasks:
       - node_modules/.bin/eslint -c .eslintrc .
   
   install-deps:
-    dir: 'backend'
+    dir: '.'
     cmds:
       - yarn {{.CLI_ARGS}}
   
   exec:
-    dir: 'backend'
+    dir: '.'
     cmds:
       - node_modules/.bin/{{.CLI_ARGS}}
   
   test:
-    dir: 'backend'
+    dir: '.'
     cmds:
       - node_modules/.bin/jest {{.CLI_ARGS}}

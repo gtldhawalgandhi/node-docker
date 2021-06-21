@@ -1,5 +1,5 @@
 import express from 'express';
-import { createUser, getUser, storeUserImage, findUserById, deleteUserById } from '@app/controllers/user';
+import { createUser, getUser, storeUserImage, findUserById, deleteUserById } from '@app/backend/src/controllers/user';
 
 const router = new express.Router();
 

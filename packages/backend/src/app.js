@@ -1,11 +1,11 @@
 
 import Express from 'express';
 import fileupload from 'express-fileupload';
-import userRouter from '@app/routes/user';
-import postRouter from '@app/routes/post';
-import { registerUser, loginUser } from '@app/controllers/user';
-import { tokenMiddleware } from '@app/middlewares/auth';
-import { cors } from '@app/middlewares/cors';
+import userRouter from '@app/backend/src/routes/user';
+import postRouter from '@app/backend/src/routes/post';
+import { registerUser, loginUser } from '@app/backend/src/controllers/user';
+import { tokenMiddleware } from '@app/backend/src/middlewares/auth';
+import { cors } from '@app/backend/src/middlewares/cors';
 
 const app = new Express();
 app.use(Express.json());

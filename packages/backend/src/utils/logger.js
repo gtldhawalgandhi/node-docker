@@ -1,5 +1,5 @@
 import winston from 'winston';
-import { config } from '@app/config';
+import { config } from '@app/backend/src/config';
 
 export default class Logger {
   constructor(module, jsFile, logFile = 'node-app.log') {

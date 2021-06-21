@@ -3,8 +3,8 @@ import path from 'path';
 
 import { validationResult } from 'express-validator/check';
 
-import Post from '@app/models/post';
-import User from '@app/models/user';
+import Post from '@app/backend/src/models/post';
+import User from '@app/backend/src/models/user';
 
 const clearImage = filePath => {
   let fP = filePath;

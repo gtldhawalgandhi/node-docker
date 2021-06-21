@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { createPost, deletePost, getPost, getPosts, updatePost } from '@app/controllers/post';
+import { createPost, deletePost, getPost, getPosts, updatePost } from '@app/backend/src/controllers/post';
 
 const postRouter = express.Router();
 
