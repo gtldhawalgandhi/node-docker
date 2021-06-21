@@ -35,6 +35,7 @@ tasks:
     ignore_error: true
     deps: ["install-deps", "build-lib-package"]
     cmds:
+      - task: remove-node-image
       - docker-compose -f ./docker-compose.dev.yml up -d --force-recreate -V --build {{.CLI_ARGS}}
       - docker attach ${NODE_APP_CONTAINER_NAME}
 
@@ -43,6 +44,7 @@ tasks:
     ignore_error: true
     cmds:
       - task: compose-down
+      - task: remove-node-image
       - docker volume rm ${NODE_MONGO_VOLUME_NAME}
       - docker network rm node_${NODE_APP_NETWORK_NAME}
       - task: rebuild-all
