@@ -9,6 +9,7 @@
     "dev:sh": "docker run -it --rm -v ${PWD}:/work -v /work/node_modules -w /work node:12.4.0-alpine /bin/sh -c ",
     "dev:run": "nodemon --inspect=0.0.0.0 --exec babel-node src/server.js"
   },
+  "files": ["build/"],
   "nodemonConfig": {
     "ignore": [
       "_test_/*",
@@ -25,13 +26,10 @@
   "license": "ISC",
   "dependencies": {
     "core-js": "^3.2.1",
-    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
     "express-validator": "^6.11.1",
-    "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.12.13",
-    "winston": "^3.3.3"
+    "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.3",

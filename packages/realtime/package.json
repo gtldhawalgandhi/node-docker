@@ -1,12 +1,14 @@
 {
-  "name": "@app/lib",
+  "name": "@app/realtime",
   "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
   "scripts": {
-    "build": "babel . --ignore build -d build"
+    "client": "node client.js",
+    "predev:run": "babel src/ --ignore build -d build",
+    "dev:run": "nodemon --exec babel-node src/server.js"
   },
-  "files": ["build/"],
+  "files": [
+    "build/"
+  ],
   "nodemonConfig": {
     "ignore": [
       "_test_/*",
@@ -23,11 +25,9 @@
   "license": "ISC",
   "dependencies": {
     "core-js": "^3.2.1",
-    "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.12.13",
-    "winston": "^3.3.3"
+    "socket.io": "",
+    "socket.io-client": "^4.1.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.3",
@@ -39,6 +39,8 @@
     "babel-plugin-module-resolver": "^4.1.0",
     "eslint": "^7.28.0",
     "eslint-loader": "^4.0.2",
-    "eslint-plugin-security": "^1.4.0"
+    "eslint-plugin-security": "^1.4.0",
+    "jest": "^27.0.4",
+    "nodemon": "^2.0.7"
   }
 }

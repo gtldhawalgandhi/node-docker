@@ -4,6 +4,7 @@
     "packages": ["packages/*"]
   },
   "scripts": {
+    "predev:run": "yarn workspace @app/lib run build",
     "dev:run": "yarn workspaces run dev:run"
   }
 }

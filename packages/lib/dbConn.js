@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { config } from '@app/backend/src/config';
+import { config } from './config';
 
 export default async () => {
   try {

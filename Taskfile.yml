@@ -1,74 +1,84 @@
-version: '3'
+version: "3"
 
-dotenv: ['.env']
+dotenv: [".env"]
 
 tasks:
-  
   compose-up:
-    deps: ['install-deps']
-    dir: '.'
+    deps: ["install-deps"]
+    dir: "."
     cmds:
       - docker-compose -f ./docker-compose.dev.yml up -d {{.CLI_ARGS}}
       - docker attach ${NODE_APP_CONTAINER_NAME}
-  
+
   remove-node-image:
-    dir: '.'
+    dir: "."
     cmds:
       - docker rmi -f nodeappimage-dev:v1
-  
+
   rebuild-node-app:
-    deps: ['install-deps']
+    deps: ["install-deps", "build-lib-package"]
     ignore_error: true
-    dir: '.'
+    dir: "."
     cmds:
       - task: remove-node-image
       - docker-compose -f ./docker-compose.dev.yml up -d --force-recreate -V --no-deps node-app
       - docker attach ${NODE_APP_CONTAINER_NAME}
-  
-  rebuild-all:
-    dir: '.'
+
+  build-lib-package:
+    dir: "."
     ignore_error: true
-    deps: ['install-deps']
+    cmds:
+      - yarn run predev:run
+
+  rebuild-all:
+    dir: "."
+    ignore_error: true
+    deps: ["install-deps", "build-lib-package"]
     cmds:
       - docker-compose -f ./docker-compose.dev.yml up -d --force-recreate -V --build {{.CLI_ARGS}}
       - docker attach ${NODE_APP_CONTAINER_NAME}
-  
+
   clean-rebuild:
-    dir: '.'
+    dir: "."
     ignore_error: true
     cmds:
       - task: compose-down
       - docker volume rm ${NODE_MONGO_VOLUME_NAME}
       - docker network rm node_${NODE_APP_NETWORK_NAME}
       - task: rebuild-all
-  
+
   compose-down:
-    dir: '.'
+    dir: "."
     cmds:
       - docker-compose -f ./docker-compose.dev.yml down
-  
+
   remove-all:
-    dir: '.'
+    dir: "."
     cmds:
       - docker stop ${MONGO_UI_CONTAINER_NAME} ${MONGO_DB_CONTAINER_NAME} ${NODE_APP_CONTAINER_NAME}
       - docker rm ${MONGO_UI_CONTAINER_NAME} ${MONGO_DB_CONTAINER_NAME} ${NODE_APP_CONTAINER_NAME}
-  
+
   lint:
-    dir: 'backend'
+    dir: "."
     cmds:
-      - node_modules/.bin/eslint -c .eslintrc .
-  
+      - node_modules/.bin/eslint -c eslint.config.js .
+
   install-deps:
-    dir: '.'
+    dir: "."
     cmds:
       - yarn {{.CLI_ARGS}}
-  
+
   exec:
-    dir: '.'
+    dir: "."
     cmds:
       - node_modules/.bin/{{.CLI_ARGS}}
-  
+
   test:
-    dir: '.'
+    dir: "."
     cmds:
       - node_modules/.bin/jest {{.CLI_ARGS}}
+
+  test-realtime:
+    dir: "."
+    cmds:
+      - yarn workspace @app/realtime run client

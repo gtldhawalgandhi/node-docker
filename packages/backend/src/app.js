@@ -5,7 +5,7 @@ import userRouter from '@app/backend/src/routes/user';
 import postRouter from '@app/backend/src/routes/post';
 import { registerUser, loginUser } from '@app/backend/src/controllers/user';
 import { tokenMiddleware } from '@app/backend/src/middlewares/auth';
-import { cors } from '@app/backend/src/middlewares/cors';
+import { cors } from '@app/lib/middlewares/cors';
 
 const app = new Express();
 app.use(Express.json());

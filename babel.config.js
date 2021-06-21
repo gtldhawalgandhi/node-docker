@@ -17,7 +17,9 @@ module.exports = {
       'module-resolver',
       {
         alias: {
-          '@app/backend/src': path.resolve(__dirname, 'packages/backend/src')
+          '@app/backend/src': process.env.NODE_ENV === 'production' ? path.resolve(__dirname, 'packages/backend/build') : path.resolve(__dirname, 'packages/backend/src'),
+          '@app/realtime/src': process.env.NODE_ENV === 'production' ? path.resolve(__dirname, 'packages/realtime/build') : path.resolve(__dirname, 'packages/realtime/src'),
+          '@app/lib': path.resolve(__dirname, 'packages/lib/build')
         }
       }
     ]

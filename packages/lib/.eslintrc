@@ -1,0 +1,85 @@
+{
+  "root": true,
+  "extends": [
+    "eslint:recommended",
+    "plugin:security/recommended"
+  ],
+  "plugins": [
+    "security"
+  ],
+  "env": {
+    "node": true,
+    "es6": true,
+    "jest": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parser": "@babel/eslint-parser",
+  "rules": {
+    "no-console": 0,
+    "func-names": [
+      "error",
+      "never"
+    ],
+    "brace-style": [
+      2,
+      "stroustrup"
+    ],
+    "max-len": [
+      1,
+      255
+    ],
+    "no-use-before-define": [
+      "error",
+      {
+        "functions": false,
+        "classes": true,
+        "variables": true
+      }
+    ],
+    "indent": [
+      "warn",
+      2
+    ],
+    "no-else-return": 0,
+    "no-param-reassign": "error",
+    "class-methods-use-this": 0,
+    "linebreak-style": 0,
+    "no-const-assign": "error",
+    "no-this-before-super": "warn",
+    "no-undef": "error",
+    "no-unused-vars": "warn",
+    "constructor-super": "warn",
+    "valid-typeof": "warn",
+    "no-var": "error",
+    "prefer-arrow-callback": "error",
+    "curly": "error",
+    "prefer-const": "error",
+    "newline-before-return": "warn",
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "prefer-template": "warn",
+    "no-control-regex": "warn",
+    "semi": "error",
+    "no-undefined": "error",
+    "max-lines": [
+      "error",
+      500
+    ],
+    "no-mixed-operators": "error",
+    "security/detect-object-injection": 0,
+    "no-trailing-spaces": "error",
+    "no-useless-escape": "error",
+    "no-throw-literal": "error",
+    "keyword-spacing": "warn",
+    "consistent-return": "error"
+  }
+}

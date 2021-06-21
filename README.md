@@ -1,36 +1,87 @@
-### Install Task on your host machine >> https://github.com/go-task/task/releases/
 
-### Create .env file from example.root.env file
+# Day6 (Yarn workspaces / monorepo)
 
 ### Command
 
-    task rebuild-all
+    task rebuild-node-app
+
+    task test-realtime
+
+- Old folder structure
+
+        |-.env
+        |-docker-compose.dev.yml
+        |-backend
+            |-package.json
+            |-Dockerfile.dev
+            |-babel.config.js
+            |-package.json
+            |-lib
+
+- New folder structure
+
+        |-.env
+        |-package.json
+        |-docker-compose.dev.yml
+        |-Dockerfile.dev
+        |-babel.config.js
+        |-packages
+          |-backend
+            |-package.json
+          |-lib
+
+
+- Changes at root level
+
+    - New package.json
+
+            {
+            "private": true,
+                "workspaces": {
+                    "packages": [
+                    "packages/*"
+                    ]
+                }
+            }
+
+        Run yarn to activate workspaces
+
+    - Pull babel.config and jest.config, Dockerfile, ignore files here from 'backend' directory
+
+    - Update .vscode settings and Taskfile
+
+- Workspaces changes
+
+    - Extract common functionality into a new 'lib' package
+
+    - Update babel.config.js files for proper module resolution
+
+            @app/backend
+            
+            @app/lib
+
+    - Problem is babel fails to load packages outside its context and so we cannot import a workspace package which has ESModule syntax. In order to fix this issue we need to build our lib package into a separate 'build' directory and use that instead 
+
+        #### **Update lib/package.json to have this entry at the top level**
+
+          "files": [
+            "build/"
+           ]
     
-    ### Or if you also want to re-build any image defined in compose file
-    task compose-up -- --build
+    - After creating new workspace make sure to run `yarn` command for the system to recognize the new package.
 
-# Day5
+- Websockets using socket.io (new workspace package `@app/realtime`)
 
-- Add nodemonConfig in package.json
+    - This package handles sending websocket events to the connected clients
 
-- Add .eslintignore
+    - Put them in separate workspace so that we could deploy it separately with a different endpoint
 
-- Install deps before running compose commands
+    - contains POST endpoint for pushing our websocket messages to connected clients
 
-- Configure jest
-    
-    task install-deps -- add -D jest babel-jest
+    - create out node client to listen to websocket messages for testing purpose
 
-    task exec -- jest --init  (Run this only when no jest.config.js file is there)
+        #### **From the root workspace run this command**
 
-    ## Add babel-jest as jest transformer
+            yarn workspace @app/realtime run client
 
-          transform: {
-            '^.+\\.js$': 'babel-jest'
-          }
-
-- task clean-rebuild
-    ### Ensure that your root workspace folder is named 'node'
-    ### This removes mongo volumes, containers and volumes, but not any images
-
-- Run tests from your host machine using `task test`
+        #### From Postman send a POST request to `http://localhost:9998/realtime` endpoint

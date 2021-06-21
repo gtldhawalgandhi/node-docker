@@ -10,8 +10,8 @@ import {
 } from '@app/backend/src/services/user';
 import jwt from 'jsonwebtoken';
 
-import Logger from '@app/backend/src/utils/logger';
-import { getHash } from '@app/backend/src/utils/password';
+import Logger from '@app/lib/logger';
+import { getHash } from '@app/lib/password';
 
 const logger = new Logger('Routes', 'user.js');
 

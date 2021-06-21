@@ -1,5 +1,5 @@
 import User from '@app/backend/src/models/user';
-import Logger from '@app/backend/src/utils/logger';
+import Logger from '@app/lib/logger';
 
 const logger = new Logger('Controller', 'user.js');
 
