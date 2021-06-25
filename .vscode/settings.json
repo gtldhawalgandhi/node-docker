@@ -2,5 +2,13 @@
   "eslint.alwaysShowStatus": true,
   "eslint.workingDirectories": [
     "backend"
+  ],
+  "filewatcher.commands": [
+    {
+      "match": "packages/lib",
+      "isAsync": true,
+      "cmd": "cd ${workspaceRoot} ; yarn workspace @app/lib run build",
+      "event": "onFolderChange"
+    }
   ]
 }

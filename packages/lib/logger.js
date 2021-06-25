@@ -2,12 +2,12 @@ import winston from 'winston';
 import { config } from './config';
 
 export default class Logger {
-  constructor(module, jsFile, logFile = 'node-app.log') {
+  constructor(module, jsFile, logFile = 'app.log') {
     this.level = config.env === 'production' ? 'error' : 'silly';
     this.prefix = `${module}[${jsFile}]`;
     this.setLogger(logFile);
   }
-  setLogger(logFile) {
+  setLogger() {
     this.logger = winston.createLogger({
       level: this.level,
       transports: [

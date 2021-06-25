@@ -1,17 +1,17 @@
 version: '3.4'
 
 services:
-  mongo-ui:
+  mongo-ui-svc:
     image: gtldhawalgandhi/dbgate:dev
     container_name: mongo_ui
     depends_on: 
-      - 'mongo-db'
+      - 'mongo-db-svc'
     ports:
       - 3009:3000
     networks:
       - docker_app_network
 
-  mongo-db:
+  mongo-db-svc:
     image: mongo:4.4.6-bionic
     container_name: mongo_db
     restart: always
@@ -29,28 +29,71 @@ services:
     networks:
       - docker_app_network
 
-  node-app:
-    image: nodeappimage-dev:v1
-    container_name: ${NODE_APP_CONTAINER_NAME}
+  backend-svc:
+    image: "${BACKEND_IMAGE_NAME}:dev"
+    container_name: ${BACKEND_CONTAINER_NAME}
     build:
       context: ./
+      target: backend
       dockerfile: ./Dockerfile.dev
     environment:
       NODE_ENV: development
-      PORT: ${NODE_APP_CONTAINER_NAME_PORT}
+      PORT: ${BACKEND_PORT}
       DB: ${MONGODB_URL}
       SALT: ${SALT}
+      REALTIME_APP_HOST: realtime-svc
     depends_on: 
-      - 'mongo-ui'
+      - 'mongo-ui-svc'
+      - 'realtime-svc'
     ports:
-      - 10000:${NODE_APP_CONTAINER_NAME_PORT}
-      - 9229:9229
+      - ${BACKEND_PORT}:${BACKEND_PORT}
+      - ${BACKEND_DEBUG_PORT}:9229
     volumes:
       - ./:/work:rw
       - /work/packages/lib/build
     networks:
       - docker_app_network
     command: ["yarn", "dev:run"]
+
+  realtime-svc:
+    image: "${REALTIME_IMAGE_NAME}:dev"
+    container_name: ${REALTIME_CONTAINER_NAME}
+    build:
+      context: ./
+      target: realtime
+      dockerfile: ./Dockerfile.dev
+    environment:
+      NODE_ENV: development
+      PORT: ${REALTIME_PORT}
+    ports:
+      - ${REALTIME_PORT}:${REALTIME_PORT}
+      - ${REALTIME_DEBUG_PORT}:9229
+    volumes:
+      - ./:/work:rw
+      - /work/packages/lib/build
+    networks:
+      - docker_app_network
+    command: ["yarn", "dev:run:realtime"]
+
+  graph-svc:
+    image: "${GRAPH_IMAGE_NAME}:dev"
+    container_name: ${GRAPH_CONTAINER_NAME}
+    build:
+      context: ./
+      target: graph
+      dockerfile: ./Dockerfile.dev
+    environment:
+      NODE_ENV: development
+      PORT: ${GRAPH_PORT}
+    ports:
+      - ${GRAPH_PORT}:${GRAPH_PORT}
+      - ${GRAPH_DEBUG_PORT}:9229
+    volumes:
+      - ./:/work:rw
+      - /work/packages/lib/build
+    networks:
+      - docker_app_network
+    command: ["yarn", "dev:run:graph"]
 
 volumes:
   mongodb_data:

@@ -1,15 +1,37 @@
 {
   "configurations": [
     {
-      "name": "Docker: Attach to NodeApp Backend",
+      "name": "Docker: Attach to Backend",
       "type": "node",
       "request": "attach",
       "remoteRoot": "/work/packages/backend",
-      "port": 9229,
+      "port": 9230,
       "address": "localhost",
       "localRoot": "${workspaceFolder}/packages/backend/",
       "protocol": "inspector",
       "restart": true
-    }
+    },
+    {
+      "name": "Docker: Attach to Realtime",
+      "type": "node",
+      "request": "attach",
+      "remoteRoot": "/work/packages/realtime",
+      "port": 9231,
+      "address": "localhost",
+      "localRoot": "${workspaceFolder}/packages/realtime/",
+      "protocol": "inspector",
+      "restart": true
+    },
+    {
+      "name": "Docker: Attach to Graph",
+      "type": "node",
+      "request": "attach",
+      "remoteRoot": "/work/packages/graph",
+      "port": 9232,
+      "address": "localhost",
+      "localRoot": "${workspaceFolder}/packages/graph/",
+      "protocol": "inspector",
+      "restart": true
+    },
   ]
 }

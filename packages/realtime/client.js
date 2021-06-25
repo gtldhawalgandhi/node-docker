@@ -1,9 +1,10 @@
 const io = require('socket.io-client');
 
-const socket = io('http://localhost:9998');
+const socket = io('http://localhost:10001');
 
 socket.on('connect', () => {
-  console.log('Client connected');
+  const timeout = 40000;
+  console.log(`Client connected for ${timeout}`);
 
   socket.on('realtimeEvent', (payload) => {
 
@@ -12,5 +13,5 @@ socket.on('connect', () => {
 
   setTimeout(() => {
     process.exit(0);
-  }, 30000);
+  }, timeout);
 });

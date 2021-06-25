@@ -14,9 +14,9 @@ beforeEach(() => {
 
 describe('storeUserImage', () => {
 
-  test('email password required', (done) => {
+  test('store image successfully', (done) => {
 
-    putImage.mockImplementation(() => null);
+    putImage.mockImplementation(() => jest.fn());
 
     const res = {
       status: function () {
@@ -47,6 +47,7 @@ describe('storeUserImage', () => {
     };
 
     storeUserImage(req, res);
+    expect(putImage).toHaveBeenCalledWith('123', 'bb');
   });
 });
 

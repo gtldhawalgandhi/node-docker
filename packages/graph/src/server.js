@@ -1,13 +1,12 @@
 import app from './app';
-import db from '@app/lib/dbConn';
 
 const start = async () => {
-  await db();
   const port = process.env.PORT;
 
   app.listen(port, '0.0.0.0', () => {
-    console.log(`Starting Backend server on port ${port}`);
+    console.log(`Starting Graph server on port ${port}`);
   });
+
 };
 
 (async () => {

@@ -1,33 +1,30 @@
-FROM node:14.17-alpine3.13 
-
-# NODE_ENV=production will not install devDependencies
-ENV NODE_ENV=development
-
+FROM node:14.17-alpine3.13 as base
 WORKDIR /work
-
-# First copy over package.json and other lock files if any to ensure that we dont run dependencies for every change made within out business logic files
 COPY package.json yarn.lock* ./
+COPY packages/lib/package.json ./packages/lib/package.json
 
+FROM base as deps
 RUN yarn
-
-# For debug purpose
+ENV NODE_ENV=development
 RUN sh -c "cat package.json"
-
 RUN sh -c "ls -lA node_modules"
-
 COPY . .
+RUN yarn workspace @app/lib run build
 
-RUN sh -c "ls -lA"
-
-# COPY . .
-
-# RUN yarn
-
-ENV PORT ${NODE_APP_CONTAINER_NAME_PORT}
-
-# This does not actually expose anything, its only meant for reference purpose
+FROM deps as graph
+COPY --from=deps /work/packages/lib/build ./packages/lib/build
+ENV PORT ${GRAPH_CONTAINER_PORT}
 EXPOSE $PORT
+CMD ["yarn", "dev:run:graph"]
 
-# WHen you start container this command will get executed
-# You can override this during runtime if you want
+FROM deps as realtime
+COPY --from=deps /work/packages/lib/build ./packages/lib/build
+ENV PORT ${REALTIME_HOST_PORT}
+EXPOSE $PORT
+CMD ["yarn", "dev:run:realtime"]
+
+FROM deps as backend
+COPY --from=deps /work/packages/lib/build ./packages/lib/build
+ENV PORT ${BACKEND_CONTAINER_PORT}
+EXPOSE $PORT
 CMD ["yarn", "dev:run"]

@@ -3,15 +3,14 @@
   "version": "1.0.0",
   "scripts": {
     "client": "node client.js",
-    "predev:run": "babel src/ --ignore build -d build",
-    "dev:run": "nodemon --exec babel-node src/server.js"
+    "predev:run": "echo 'Exec realtime build'; babel src/ --ignore build -d build",
+    "dev:run": "nodemon --inspect=0.0.0.0 --exec babel-node src/server.js"
   },
   "files": [
     "build/"
   ],
   "nodemonConfig": {
     "ignore": [
-      "_test_/*",
       "*.config.*",
       "*compose.yml",
       "*dockerfile*",
