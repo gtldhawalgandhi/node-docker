@@ -4,13 +4,7 @@ type Post {
     content: String!
     imageURL: String!
     author: User!
-    created: 
 }
-
-# enum Month {
-#     jan
-#     feb  
-# }
 
 type User {
     _id: ID!
@@ -29,7 +23,6 @@ type AuthData {
 input UserInputData {
     email: String!
     password: String!
-    month: Month
 }
 
 type RootQuery {
