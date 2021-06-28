@@ -1,4 +1,5 @@
 import winston from 'winston';
+import { format } from 'logform/dist/browser';
 import { config } from './config';
 
 export default class Logger {
@@ -12,7 +13,7 @@ export default class Logger {
       level: this.level,
       transports: [
         new winston.transports.Console({
-          format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
+          format: format.combine( format.simple()),
         }),
         // new winston.transports.File({ filename: logFile }),
       ],
@@ -22,16 +23,16 @@ export default class Logger {
     this.level = level;
   }
 
-  silly(arg){
+  silly(arg) {
     this.logger.silly(`${this.prefix}: ${arg}`);
   }
-  debug(arg){
+  debug(arg) {
     this.logger.debug(`${this.prefix}: ${arg}`);
   }
-  info(arg){
+  info(arg) {
     this.logger.info(`${this.prefix}: ${arg}`);
   }
-  error(arg){
+  error(arg) {
     this.logger.error(`${this.prefix}: ${arg}`);
   }
 }

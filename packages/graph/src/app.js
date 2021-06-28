@@ -1,10 +1,10 @@
 
 import Express from 'express';
-import { cors } from '@app/lib/middlewares/cors';
+import { cors } from '@app/lib/src/middlewares/cors';
 import { graphqlHTTP } from 'express-graphql';
 import { graphQLSchema, graphQLResolvers } from './ql';
 
-import Logger from '@app/lib/logger';
+import Logger from '@app/lib/src/logger';
 const logger = new Logger('App-Entry', 'app.js');
 
 const app = new Express();

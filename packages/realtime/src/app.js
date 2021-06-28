@@ -1,7 +1,7 @@
 
 import Express from 'express';
 import { realtimeHandler } from '@app/realtime/src/controllers/realtime';
-import { cors } from '@app/lib/middlewares/cors';
+import { cors } from '@app/lib/src/middlewares/cors';
 
 const app = new Express();
 app.use(Express.json());

@@ -1,10 +1,19 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "packages",
     "paths": {
-      "@app/*": [
-        "./backend/src/*"
-      ]
+      "@app/backend/*": [
+        "./backend/*"
+      ],
+      "@app/raltime/*": [
+        "./raltime/*"
+      ],
+      "@app/graph/*": [
+        "./graph/*"
+      ],
+      "@app/lib/*": [
+        "./lib/*"
+      ],
     }
   }
 }

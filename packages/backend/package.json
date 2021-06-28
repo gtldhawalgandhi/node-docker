@@ -7,9 +7,15 @@
     "test": "jest",
     "export-lockfiles": "docker run -it --rm -v ${PWD}:/work -v /work/node_modules -w /work node:12.4.0-alpine /bin/sh -c 'yarn'",
     "dev:sh": "docker run -it --rm -v ${PWD}:/work -v /work/node_modules -w /work node:12.4.0-alpine /bin/sh -c ",
+    "build": "esbuild --log-level=error --platform=node --target=node12.20 --minify-whitespace --minify-syntax --bundle --external:mongodb-client-encryption --outdir=build src/server.js",
+    "preprod:run": "yarn workspace @app/backend run build",
+    "prod:run": "node build/server.js",
+    "predev:run": "yarn workspace @app/lib run build",
     "dev:run": "nodemon --inspect=0.0.0.0 --exec babel-node src/server.js"
   },
-  "files": ["build/"],
+  "files": [
+    "build/"
+  ],
   "nodemonConfig": {
     "events": {
       "restart": "yarn workspace @app/lib run build"
@@ -31,6 +37,7 @@
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
     "express-validator": "^6.11.1",
+    "http-terminator": "^3.0.0",
     "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {

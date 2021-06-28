@@ -1,12 +1,18 @@
 {
   "private": true,
   "workspaces": {
-    "packages": ["packages/*"]
+    "packages": [
+      "packages/*"
+    ]
   },
   "scripts": {
     "predev:run": "yarn workspace @app/lib run build",
     "dev:run": "yarn workspace @app/backend run dev:run",
     "dev:run:realtime": "yarn workspace @app/realtime run dev:run",
+    "build": "yarn workspaces run build",
     "dev:run:graph": "yarn workspace @app/graph run dev:run"
+  },
+  "devDependencies": {
+    "esbuild": "^0.12.9"
   }
 }

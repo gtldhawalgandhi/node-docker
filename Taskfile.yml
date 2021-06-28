@@ -2,12 +2,15 @@ version: "3"
 
 dotenv: [".env"]
 
+env:
+  STAGE: "{{.STAGE}}"
+
 tasks:
   compose-up:
     deps: ["yarn-host"]
     dir: "."
     cmds:
-      - "docker-compose -f ./docker-compose.${STAGE}.yml up -d {{.CLI_ARGS}}"
+      - docker-compose -f ./docker-compose.${STAGE}.yml up -d {{.CLI_ARGS}}
       - docker attach ${BACKEND_CONTAINER_NAME}
 
   remove-backend-image:
@@ -28,9 +31,8 @@ tasks:
   rebuild-attach-all:
     dir: "."
     ignore_error: true
-    deps: ["yarn-host", "build-lib-package-host"]
     cmds:
-      - task --parallel remove-backend-image remove-realtime-image remove-graph-image
+      # - task --parallel remove-backend-image remove-realtime-image remove-graph-image
       - task: build-start-stack
       - docker attach {{.REALTIME_CONTAINER_NAME}} &
       - docker attach {{.GRAPH_CONTAINER_NAME}} &
@@ -39,8 +41,8 @@ tasks:
   rebuild-attach-backend:
     dir: "."
     cmds:
-      - task: remove-backend-image
-      - task: single-no-cache-compose-build-attach-template
+      # - task: remove-backend-image
+      - task: compose-build-attach-single-template
         vars:
           COMPOSE_SERVICE: backend-svc
           CONTAINER_NAME: "{{.BACKEND_CONTAINER_NAME}}"
@@ -48,32 +50,42 @@ tasks:
   rebuild-attach-realtime:
     dir: "."
     cmds:
-      - task: remove-realtime-image
-      - task: single-no-cache-compose-build-attach-template
+      # - task: remove-realtime-image
+      - task: compose-build-attach-single-template
         vars:
           COMPOSE_SERVICE: realtime-svc
           CONTAINER_NAME: "{{.REALTIME_CONTAINER_NAME}}"
+          NO_DEPS: "--no-deps"
   
   rebuild-attach-graph:
     dir: "."
     cmds:
-      - task: remove-graph-image
-      - task: single-no-cache-compose-build-attach-template
+      # - task: remove-graph-image
+      - task: compose-build-attach-single-template
         vars:
+          NO_DEPS: "--no-deps"
           COMPOSE_SERVICE: graph-svc
           CONTAINER_NAME: "{{.GRAPH_CONTAINER_NAME}}"
 
   build-start-stack:
     cmds:
-      - docker-compose -f ./docker-compose.${STAGE}.yml build --no-cache realtime-svc
+      - docker-compose -f ./docker-compose.${STAGE}.yml build {{.NOCACHE}} realtime-svc
       - docker-compose -f ./docker-compose.${STAGE}.yml build graph-svc # re-use cache
       - docker-compose -f ./docker-compose.${STAGE}.yml build backend-svc # re-use cache
-      - "docker-compose -f ./docker-compose.${STAGE}.yml up -d --force-recreate -V"
+      - docker-compose -f ./docker-compose.${STAGE}.yml up -d --force-recreate -V
 
-  single-no-cache-compose-build-attach-template:
+  # compose-build-service-template:
+  #   cmds:
+  #     - docker-compose -f ./docker-compose.${STAGE}.yml build {{.NOCACHE}} {{.COMPOSE_SERVICE}}
+
+  # compose-recreate-service-template:
+  #   cmds:
+  #     - docker-compose -f ./docker-compose.${STAGE}.yml up -d --force-recreate -V {{ .NO_DEPS }} {{.COMPOSE_SERVICE}}
+
+  compose-build-attach-single-template:
     cmds:
-      - "docker-compose -f ./docker-compose.${STAGE}.yml build --no-cache {{.COMPOSE_SERVICE}}"
-      - "docker-compose -f ./docker-compose.${STAGE}.yml up -d --force-recreate -V --no-deps {{.COMPOSE_SERVICE}}"
+      - docker-compose -f ./docker-compose.${STAGE}.yml build {{.NOCACHE}} {{.COMPOSE_SERVICE}}
+      - docker-compose -f ./docker-compose.${STAGE}.yml up -d --force-recreate -V {{ .NO_DEPS }} {{.COMPOSE_SERVICE}}
       - docker attach {{.CONTAINER_NAME}}
 
   recreate-realtime:
@@ -82,7 +94,7 @@ tasks:
     dir: "."
     cmds:
       - task: remove-realtime-image
-      - "docker-compose -f ./docker-compose.${STAGE}.yml up -d --force-recreate -V --no-deps realtime-svc"
+      - docker-compose -f ./docker-compose.${STAGE}.yml up -d --force-recreate -V --no-deps realtime-svc
       - docker attach ${REALTIME_CONTAINER_NAME}
 
   recreate-backend:
@@ -91,7 +103,7 @@ tasks:
     dir: "."
     cmds:
       - task: remove-backend-image
-      - "docker-compose -f ./docker-compose.${STAGE}.yml up -d --force-recreate -V --no-deps backend-svc"
+      - docker-compose -f ./docker-compose.${STAGE}.yml up -d --force-recreate -V --no-deps backend-svc
       - docker attach ${BACKEND_CONTAINER_NAME}
 
   recreate-graph:
@@ -100,7 +112,7 @@ tasks:
     dir: "."
     cmds:
       - task: remove-graph-image
-      - "docker-compose -f ./docker-compose.${STAGE}.yml up -d --force-recreate -V --no-deps graph-svc"
+      - docker-compose -f ./docker-compose.${STAGE}.yml up -d --force-recreate -V --no-deps graph-svc
       - docker attach ${GRAPH_CONTAINER_NAME}
 
   recreate-template:
@@ -108,7 +120,7 @@ tasks:
     ignore_error: true
     dir: "."
     cmds:
-      - "docker-compose -f ./docker-compose.${STAGE}.yml up -d --force-recreate -V --no-deps backend-svc"
+      - docker-compose -f ./docker-compose.${STAGE}.yml up -d --force-recreate -V --no-deps backend-svc
       - docker attach ${BACKEND_CONTAINER_NAME}
 
   build-lib-package-host:
@@ -121,27 +133,24 @@ tasks:
     dir: "."
     ignore_error: true
     cmds:
-      - cmd: 
-        task: compose-down
-        ignore_error: true
+      - task: compose-down
       - cmd: 
         task: cleanup-all
-        ignore_error: true
       - task: rebuild-attach-all
 
   compose-down:
     dir: "."
+    ignore_error: true
     cmds:
-      - "docker-compose -f ./docker-compose.${STAGE}.yml down"
+      - docker-compose -f ./docker-compose.${STAGE}.yml down
 
   cleanup-all:
     dir: "."
+    ignore_error: true
     cmds:
-      - "docker-compose -f ./docker-compose.${STAGE}.yml down"
-      - docker image prune -f
+      - docker image prune -a -f
       - docker volume prune -f
       - docker system prune -f
-      - docker builder prune --filter type=regular -f
 
   lint:
     dir: "."
@@ -160,6 +169,7 @@ tasks:
 
   test:
     dir: "."
+    ignore_error: true
     cmds:
       - node_modules/.bin/jest {{.CLI_ARGS}}
 
@@ -167,3 +177,19 @@ tasks:
     dir: "."
     cmds:
       - yarn workspace @app/realtime run client
+
+  esbuild:
+    dir: "{{.ESBUILD_DIR}}"
+    vars:
+      GITHUB_SHA:
+        sh: git log --format="%H" -n 1
+    cmds:
+      - |
+        esbuild '--define:process.env.COMMIT="{{.GITHUB_SHA}}"' --log-level=error --platform=node --target=node12.20 --minify-whitespace --minify-syntax --bundle --external:mongodb-client-encryption --outdir=build {{.ENTRIES}}
+
+  prod-build:
+    ignore_error: true
+    cmds:
+      - docker-compose -f docker-compose.${STAGE}.yml down graph-svc
+      - docker-compose -f docker-compose.${STAGE}.yml build graph-svc
+      - docker-compose -f docker-compose.${STAGE}.yml up -d --force-recreate -V graph-svc 

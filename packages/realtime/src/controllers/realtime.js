@@ -1,6 +1,6 @@
 
 
-import Logger from '@app/lib/logger';
+import Logger from '@app/lib/src/logger';
 
 import { web } from '@app/realtime/src/socket';
 

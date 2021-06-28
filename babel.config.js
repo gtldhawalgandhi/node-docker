@@ -7,7 +7,7 @@ module.exports = {
       {
         useBuiltIns: 'usage',
         corejs: 3,
-        targets: { node: '12.13' }
+        targets: { node: '12.20' }
       }
     ]
   ],
@@ -20,7 +20,7 @@ module.exports = {
           '@app/backend/src': process.env.NODE_ENV === 'production' ? path.resolve(__dirname, 'packages/backend/build') : path.resolve(__dirname, 'packages/backend/src'),
           '@app/realtime/src': process.env.NODE_ENV === 'production' ? path.resolve(__dirname, 'packages/realtime/build') : path.resolve(__dirname, 'packages/realtime/src'),
           '@app/graph/src': process.env.NODE_ENV === 'production' ? path.resolve(__dirname, 'packages/graph/build') : path.resolve(__dirname, 'packages/graph/src'),
-          '@app/lib': path.resolve(__dirname, 'packages/lib/build')
+          '@app/lib/src': path.resolve(__dirname, 'packages/lib/build')
         }
       }
     ]

@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "scripts": {
     "client": "node client.js",
-    "predev:run": "echo 'Exec realtime build'; babel src/ --ignore build -d build",
+    "build": "esbuild --log-level=error --platform=node --target=node12.20 --minify-whitespace --minify-syntax --bundle --external:mongodb-client-encryption --outdir=build src/server.js",
+    "preprod:run": "yarn workspace @app/realtime run build",
+    "prod:run": "node build/server.js",
+    "predev:run": "yarn workspace @app/lib run build",
     "dev:run": "nodemon --inspect=0.0.0.0 --exec babel-node src/server.js"
   },
   "files": [

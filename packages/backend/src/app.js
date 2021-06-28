@@ -5,8 +5,8 @@ import userRouter from '@app/backend/src/routes/user';
 import postRouter from '@app/backend/src/routes/post';
 import { registerUser, loginUser } from '@app/backend/src/controllers/user';
 import { tokenMiddleware } from '@app/backend/src/middlewares/auth';
-import { cors } from '@app/lib/middlewares/cors';
-import { config } from '@app/lib/config';
+import { cors } from '@app/lib/src/middlewares/cors';
+import { config } from '@app/lib/src/config';
 
 console.log(`Backend Config: ${JSON.stringify(config, null, 2)}`);
 

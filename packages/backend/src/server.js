@@ -1,5 +1,5 @@
 import app from './app';
-import db from '@app/lib/dbConn';
+import db from '@app/lib/src/dbConn';
 
 const start = async () => {
   await db();
