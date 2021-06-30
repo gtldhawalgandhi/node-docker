@@ -3,81 +3,49 @@ version: '3.4'
 services:
   mongo-ui-svc:
     image: gtldhawalgandhi/dbgate:dev
-    container_name: ${MONGO_UI_CONTAINER_NAME}
-    depends_on: 
-      - 'mongo-db-svc'
+    container_name: "${MONGO_UI_CONTAINER_NAME}"
     ports:
-      - 3009:3000
+      - ${MONGO_UI_HOST_PORT}:3000
     networks:
-      - prod_docker_app_network
-
-  mongo-db-svc:
-    image: mongo:4.4.6-bionic
-    container_name: ${MONGO_DB_CONTAINER_NAME}
-    restart: always
-    env_file:
-      - .env
-    ports:
-      - 27017:27017
-    volumes:
-      - mongodb_data:/data/db
-      - ./packages/backend/scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
-    networks:
-      - prod_docker_app_network
-
+      - app_network
+      
   backend-svc:
-    image: "${BACKEND_IMAGE_NAME}:prod"
+    image: ${BACKEND_IMAGE_NAME}
     container_name: ${BACKEND_CONTAINER_NAME}
-    build:
-      context: ./
-      target: prod_backend
-      dockerfile: ./Dockerfile
+    env_file:
+      - prod.env
     environment:
-      NODE_ENV: development
+      REALTIME_APP_HOST: ${REALTIME_CONTAINER_NAME}
       PORT: ${BACKEND_PORT}
-      DB: ${MONGODB_URL}
-      SALT: ${SALT}
-      REALTIME_APP_HOST: realtime-svc
-    depends_on: 
-      - 'mongo-ui-svc'
     ports:
       - ${BACKEND_PORT}:${BACKEND_PORT}
     networks:
-      - prod_docker_app_network
+      - app_network
+    command: ["node", "server.js"]
 
   realtime-svc:
-    image: "${REALTIME_IMAGE_NAME}:prod"
+    image: ${REALTIME_IMAGE_NAME}
     container_name: ${REALTIME_CONTAINER_NAME}
-    build:
-      context: ./
-      target: prod_realtime
-      dockerfile: ./Dockerfile
     environment:
-      NODE_ENV: development
       PORT: ${REALTIME_PORT}
     ports:
       - ${REALTIME_PORT}:${REALTIME_PORT}
     networks:
-      - prod_docker_app_network
+      - app_network
+    command: ["node", "server.js"]
 
   graph-svc:
-    image: "${GRAPH_IMAGE_NAME}:prod"
+    image: ${GRAPH_IMAGE_NAME}
     container_name: ${GRAPH_CONTAINER_NAME}
-    build:
-      context: ./
-      target: prod_graph
-      dockerfile: ./Dockerfile
     environment:
-      NODE_ENV: development
       PORT: ${GRAPH_PORT}
     ports:
       - ${GRAPH_PORT}:${GRAPH_PORT}
-      - ${GRAPH_DEBUG_PORT}:9229
     networks:
-      - prod_docker_app_network
-
-volumes:
-  mongodb_data:
+      - app_network
+    command: ["node", "server.js"]
 
 networks:
-  prod_docker_app_network:
+  app_network:
+    driver: bridge
+    name: prod_app_network

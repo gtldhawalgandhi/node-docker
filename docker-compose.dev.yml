@@ -3,43 +3,41 @@ version: '3.4'
 services:
   mongo-ui-svc:
     image: gtldhawalgandhi/dbgate:dev
-    container_name: ${MONGO_UI_CONTAINER_NAME}
+    container_name: "${MONGO_UI_CONTAINER_NAME}"
     depends_on: 
-      - 'mongo-db-svc'
+      - mongo-db-svc
     ports:
-      - 3009:3000
+      - ${MONGO_UI_HOST_PORT}:3000
     networks:
-      - docker_app_network
+      - app_network
 
   mongo-db-svc:
     image: mongo:4.4.6-bionic
-    container_name: ${MONGO_DB_CONTAINER_NAME}
-    restart: always
+    container_name: "${MONGO_DB_CONTAINER_NAME}"
     env_file:
-      - .env
+      - dev.env
     ports:
-      - 27017:27017
+      - ${MONGO_DB_HOST_PORT}:27017
     volumes:
-      - mongodb_data:/data/db
-      - ./packages/backend/scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
+      - app_db_volume:/data/db
+      - ./scripts/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
     networks:
-      - docker_app_network
+      - app_network
 
   backend-svc:
-    image: "${BACKEND_IMAGE_NAME}:dev"
-    container_name: ${BACKEND_CONTAINER_NAME}
+    image: "${BACKEND_IMAGE_NAME}"
+    container_name: "${BACKEND_CONTAINER_NAME}"
     build:
       context: ./
       target: backend
       dockerfile: ./Dockerfile
+    env_file:
+      - dev.env
     environment:
-      NODE_ENV: development
+      REALTIME_APP_HOST: "${REALTIME_CONTAINER_NAME}"
       PORT: ${BACKEND_PORT}
-      DB: ${MONGODB_URL}
-      SALT: ${SALT}
-      REALTIME_APP_HOST: realtime-svc
     depends_on: 
-      - 'mongo-ui-svc'
+      - mongo-ui-svc
     ports:
       - ${BACKEND_PORT}:${BACKEND_PORT}
       - ${BACKEND_DEBUG_PORT}:9229
@@ -49,18 +47,17 @@ services:
       - /work/packages/backend/node_modules
       - /work/node_modules
     networks:
-      - docker_app_network
+      - app_network
     command: ["yarn", "dev:run"]
 
   realtime-svc:
-    image: "${REALTIME_IMAGE_NAME}:dev"
-    container_name: ${REALTIME_CONTAINER_NAME}
+    image: "${REALTIME_IMAGE_NAME}"
+    container_name: "${REALTIME_CONTAINER_NAME}"
     build:
       context: ./
       target: realtime
       dockerfile: ./Dockerfile
     environment:
-      NODE_ENV: development
       PORT: ${REALTIME_PORT}
     ports:
       - ${REALTIME_PORT}:${REALTIME_PORT}
@@ -72,18 +69,17 @@ services:
       - /work/node_modules
       # - ./:/work:delegated (for MacOS only)
     networks:
-      - docker_app_network
+      - app_network
     command: ["yarn", "dev:run:realtime"]
 
   graph-svc:
-    image: "${GRAPH_IMAGE_NAME}:dev"
-    container_name: ${GRAPH_CONTAINER_NAME}
+    image: "${GRAPH_IMAGE_NAME}"
+    container_name: "${GRAPH_CONTAINER_NAME}"
     build:
       context: ./
       target: graph
       dockerfile: ./Dockerfile
     environment:
-      NODE_ENV: development
       PORT: ${GRAPH_PORT}
     ports:
       - ${GRAPH_PORT}:${GRAPH_PORT}
@@ -94,11 +90,15 @@ services:
       - /work/packages/graph/node_modules
       - /work/node_modules
     networks:
-      - docker_app_network
+      - app_network
     command: ["yarn", "dev:run:graph"]
 
 volumes:
-  mongodb_data:
+  app_db_volume:
+    driver: local
+    name: dev_mongo_db
 
 networks:
-  docker_app_network:
+  app_network:
+    driver: bridge
+    name: dev_app_network

@@ -59,8 +59,8 @@ FROM base as prod_graph
 
 COPY --from=dev_source /work/packages/graph/build /work/
 COPY --from=dev_source /work/packages/graph/src/ql/schema.graphql /work/schema.graphql
-USER node
 COPY --from=dev_source /work/package.json /work/package.json
+USER node
 CMD ["node", "server.js"]
 
 FROM base as prod_backend

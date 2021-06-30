@@ -6,9 +6,6 @@ import postRouter from '@app/backend/src/routes/post';
 import { registerUser, loginUser } from '@app/backend/src/controllers/user';
 import { tokenMiddleware } from '@app/backend/src/middlewares/auth';
 import { cors } from '@app/lib/src/middlewares/cors';
-import { config } from '@app/lib/src/config';
-
-console.log(`Backend Config: ${JSON.stringify(config, null, 2)}`);
 
 const app = new Express();
 app.use(Express.json());

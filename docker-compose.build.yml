@@ -1,0 +1,56 @@
+version: '3.4'
+
+services:
+  backend-svc:
+    image: "${BACKEND_IMAGE_NAME}"
+    container_name: "${BACKEND_CONTAINER_NAME}"
+    build:
+      context: ./
+      target: prod_backend
+      dockerfile: ./Dockerfile
+    env_file:
+      - prod.env
+    environment:
+      REALTIME_APP_HOST: "${REALTIME_CONTAINER_NAME}"
+      PORT: ${BACKEND_PORT}
+    ports:
+      - ${BACKEND_PORT}:${BACKEND_PORT}
+    networks:
+      - prod_docker_app_network
+    command: ["echo", "build complete"]
+
+  realtime-svc:
+    image: "${REALTIME_IMAGE_NAME}"
+    container_name: "${REALTIME_CONTAINER_NAME}"
+    build:
+      context: ./
+      target: prod_realtime
+      dockerfile: ./Dockerfile
+    environment:
+      PORT: ${REALTIME_PORT}
+    ports:
+      - ${REALTIME_PORT}:${REALTIME_PORT}
+    networks:
+      - prod_docker_app_network
+    command: ["sh", "-c", "echo \"build complete\""]
+
+  graph-svc:
+    image: "${GRAPH_IMAGE_NAME}"
+    container_name: "${GRAPH_CONTAINER_NAME}"
+    build:
+      context: ./
+      target: prod_graph
+      dockerfile: ./Dockerfile
+    environment:
+      PORT: ${GRAPH_PORT}
+    ports:
+      - ${GRAPH_PORT}:${GRAPH_PORT}
+    networks:
+      - prod_docker_app_network
+    command: ["echo", "build complete"]
+
+volumes:
+  prod_mongodb_data:
+
+networks:
+  prod_docker_app_network:

@@ -1,0 +1,6 @@
+version: "3"
+
+dotenv: ["dev.env"]
+
+includes:
+  common: ./Taskfile.common.yml

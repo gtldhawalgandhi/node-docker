@@ -6,12 +6,14 @@ dotenv.config({ path: envPath });
 
 const config = {
   env: process.env.NODE_ENV,
-  db: process.env.DB,
+  db: process.env.MONGODB_URL,
   salt: process.env.SALT,
   realtimeAppHost: process.env.REALTIME_APP_HOST,
 };
 
-console.log(JSON.stringify(config, null, 2));
+if (config.env !== 'production') {
+  console.log(`App Config: ${JSON.stringify(config, null, 2)}`);
+}
 
 export {
   config

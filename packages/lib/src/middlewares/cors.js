@@ -9,8 +9,6 @@ const cors = async (req, res, next) => {
     return res.sendStatus(200);
   }
 
-  console.log(`Git Sha Commit: ${process.env.COMMIT}`);
-
   next();
 
   return null;
