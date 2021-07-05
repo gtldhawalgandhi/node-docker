@@ -7,7 +7,7 @@ WORKDIR /work
 COPY --chown=node:node package.json yarn.lock* ./
 
 FROM base as base_deps
-RUN yarn
+RUN --mount=type=cache,target=/work/node_modules yarn
 
 FROM base_deps as dev
 ENV PATH=/work/node_modules/.bin:$PATH
@@ -16,34 +16,31 @@ COPY --chown=node:node packages/backend/package.json ./packages/backend/package.
 COPY --chown=node:node packages/realtime/package.json ./packages/realtime/package.json
 COPY --chown=node:node packages/graph/package.json ./packages/graph/package.json
 COPY --chown=node:node packages/lib/package.json ./packages/lib/package.json
-RUN yarn
+RUN --mount=type=cache,target=/work/node_modules yarn
 
 FROM base_deps as source
 COPY --chown=node:node . .
 
 FROM dev as dev_source
 COPY --chown=node:node . .
-RUN ["yarn", "run", "build"]
+RUN  --mount=type=cache,target=/work/node_modules yarn run build
 
 #####################################################################
 
 FROM source as lint_test
 COPY --from=dev /work/node_modules /work/node_modules
 ENV NODE_ENV=development
-EXPOSE $PORT
-RUN eslint .
-RUN jest
+RUN --mount=type=cache,target=/work/node_modules eslint .
+RUN --mount=type=cache,target=/work/node_modules jest
+CMD ["eslint ."]
 
 FROM lint_test as realtime
-ENV PORT ${REALTIME_HOST_PORT}
 CMD ["yarn", "workspace", "@app/realtime", "run", "dev:run"]
 
 FROM lint_test as graph
-ENV PORT ${GRAPH_HOST_PORT}
 CMD ["yarn", "workspace", "@app/graph", "run", "dev:run"]
 
 FROM lint_test as backend
-ENV PORT ${BACKEND_HOST_PORT}
 CMD ["yarn", "workspace", "@app/backend", "run", "dev:run"]
 
 #####################################################################

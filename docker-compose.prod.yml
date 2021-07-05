@@ -1,6 +1,17 @@
 version: '3.4'
 
 services:
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watch_tower
+    restart: "no"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_RUN_ONCE=true
+
   mongo-ui-svc:
     image: gtldhawalgandhi/dbgate:dev
     container_name: "${MONGO_UI_CONTAINER_NAME}"

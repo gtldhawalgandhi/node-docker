@@ -1,0 +1,12 @@
+# rename this file to terraform.tfvars
+resource_group_name         = "rg-1"
+resource_group_location     = "East US"
+virtual_network_name        = "vnet-1"
+subnet_name                 = "subnet-1"
+public_ip_name              = "publicip-name-1"
+network_security_group_name = "nsg-1"
+network_interface_name      = "nic-1"
+linux_virtual_machine_name  = "dockernode-1"
+vm_user                     = "nodeuser"
+public_ssh_key              = "~/.ssh/azure.pub"
+private_ssh_key             = "~/.ssh/azure"

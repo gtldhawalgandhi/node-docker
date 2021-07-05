@@ -2,27 +2,27 @@ version: "3"
 
 tasks:
   compose-up:
-    dir: "."
+    dir: ".."
     cmds:
       - docker-compose -f ./docker-compose.{{.STAGE}}.yml up -d {{.CLI_ARGS}}
 
   remove-backend-image:
-    dir: "."
+    dir: ".."
     cmds:
       - docker rmi -f ${BACKEND_IMAGE_NAME}
 
   remove-realtime-image:
-    dir: "."
+    dir: ".."
     cmds:
       - docker rmi -f ${REALTIME_IMAGE_NAME}
 
   remove-graph-image:
-    dir: "."
+    dir: ".."
     cmds:
       - docker rmi -f ${GRAPH_IMAGE_NAME}
 
   rebuild-attach-all:
-    dir: "."
+    dir: ".."
     ignore_error: true
     cmds:
       # - task --parallel remove-backend-image remove-realtime-image remove-graph-image
@@ -33,7 +33,7 @@ tasks:
       - docker attach ${BACKEND_CONTAINER_NAME}
 
   rebuild-attach-backend:
-    dir: "."
+    dir: ".."
     cmds:
       # - task: remove-backend-image
       - task: compose-build-attach-single-template
@@ -42,7 +42,7 @@ tasks:
           CONTAINER_NAME: "{{.BACKEND_CONTAINER_NAME}}"
   
   rebuild-attach-realtime:
-    dir: "."
+    dir: ".."
     cmds:
       # - task: remove-realtime-image
       - task: compose-build-attach-single-template
@@ -52,7 +52,7 @@ tasks:
           NO_DEPS: "--no-deps"
   
   rebuild-attach-graph:
-    dir: "."
+    dir: ".."
     cmds:
       # - task: remove-graph-image
       - task: compose-build-attach-single-template
@@ -62,12 +62,14 @@ tasks:
           CONTAINER_NAME: "{{.GRAPH_CONTAINER_NAME}}"
 
   build-stack:
+    dir: ".."
     cmds:
       - docker-compose -f ./docker-compose.{{.STAGE}}.yml build {{.NOCACHE}} realtime-svc
       - docker-compose -f ./docker-compose.{{.STAGE}}.yml build graph-svc # re-use cache
       - docker-compose -f ./docker-compose.{{.STAGE}}.yml build backend-svc # re-use cache
 
   compose-build-attach-single-template:
+    dir: ".."
     cmds:
       - docker-compose -f ./docker-compose.{{.STAGE}}.yml build {{.NOCACHE}} {{.COMPOSE_SERVICE}}
       - docker-compose -f ./docker-compose.{{.STAGE}}.yml up -d -V {{.NO_DEPS}} {{.COMPOSE_SERVICE}}
@@ -75,7 +77,7 @@ tasks:
 
   recreate-realtime:
     ignore_error: true
-    dir: "."
+    dir: ".."
     cmds:
       - task: remove-realtime-image
       - docker-compose -f ./docker-compose.{{.STAGE}}.yml up -d --force-recreate -V --no-deps realtime-svc
@@ -83,7 +85,7 @@ tasks:
 
   recreate-backend:
     ignore_error: true
-    dir: "."
+    dir: ".."
     cmds:
       - task: remove-backend-image
       - docker-compose -f ./docker-compose.{{.STAGE}}.yml up -d --force-recreate -V --no-deps backend-svc
@@ -91,7 +93,7 @@ tasks:
 
   recreate-graph:
     ignore_error: true
-    dir: "."
+    dir: ".."
     cmds:
       - task: remove-graph-image
       - docker-compose -f ./docker-compose.{{.STAGE}}.yml up -d --force-recreate -V --no-deps graph-svc
@@ -99,20 +101,20 @@ tasks:
 
   recreate-template:
     ignore_error: true
-    dir: "."
+    dir: ".."
     cmds:
       - docker-compose -f ./docker-compose.{{.STAGE}}.yml up -d --force-recreate -V --no-deps backend-svc
       - docker attach ${BACKEND_CONTAINER_NAME}
 
   build-on-host:
-    dir: "."
+    dir: ".."
     ignore_error: true
     cmds:
       - yarn
       - yarn run build
 
   clean-rebuild-attach-all:
-    dir: "."
+    dir: ".."
     ignore_error: true
     cmds:
       - task: compose-down
@@ -121,13 +123,13 @@ tasks:
       - task: rebuild-attach-all
 
   compose-down:
-    dir: "."
+    dir: ".."
     ignore_error: true
     cmds:
       - docker-compose -f ./docker-compose.{{.STAGE}}.yml down
 
   cleanup-all:
-    dir: "."
+    dir: ".."
     ignore_error: true
     cmds:
       - docker image prune -a -f
@@ -135,28 +137,28 @@ tasks:
       - docker system prune -f
 
   lint:
-    dir: "."
+    dir: ".."
     cmds:
       - node_modules/.bin/eslint -c eslint.config.js .
 
   yarn-host:
-    dir: "."
+    dir: ".."
     cmds:
       - yarn {{.CLI_ARGS}}
 
   exec:
-    dir: "."
+    dir: ".."
     cmds:
       - node_modules/.bin/{{.CLI_ARGS}}
 
   test:
-    dir: "."
+    dir: ".."
     ignore_error: true
     cmds:
       - node_modules/.bin/jest {{.CLI_ARGS}}
 
   test-realtime:
-    dir: "."
+    dir: ".."
     cmds:
       - yarn workspace @app/realtime run client
 

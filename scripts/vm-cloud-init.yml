@@ -3,12 +3,12 @@ groups:
   - docker
 users:
   - default
-  - name: docker-node
+  - name: ${vm_user}
     sudo: ALL=(ALL) NOPASSWD:ALL
     lock_passwd: true
     passwd: "hashed password here" # mkpasswd --method=SHA-512 --rounds=4096
     ssh_authorized_keys:
-      - "rsa public key only, Azure does not accept ed25519 keys :("
+      - ${public_ssh_key}
     groups: docker
 package_upgrade: true
 packages:
@@ -31,8 +31,4 @@ runcmd:
   # install docker-compose following the guide: https://docs.docker.com/compose/install/
   - sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
   - sudo chmod +x /usr/local/bin/docker-compose
-
-# Restart is required so that the group assignment to docker-node user works and so later we no longer have to use 'sudo'
-power_state:
-  mode: reboot
-  message: Restarting after installing docker & docker-compose
+  - su - ${vm_user}
