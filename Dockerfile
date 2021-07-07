@@ -27,9 +27,7 @@ RUN  --mount=type=cache,target=/work/node_modules yarn run build
 
 #####################################################################
 
-FROM source as lint_test
-COPY --from=dev /work/node_modules /work/node_modules
-ENV NODE_ENV=development
+FROM dev_source as lint_test
 RUN --mount=type=cache,target=/work/node_modules eslint .
 RUN --mount=type=cache,target=/work/node_modules jest
 CMD ["eslint ."]
