@@ -129,7 +129,7 @@ describe('loginUser', () => {
         return this;
       },
       json: (input = {}) => {
-        if (input.status === 'ok') {
+        if (input.status === 'okkk') {
           done();
         }
         else {
