@@ -16,7 +16,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  Lint-Test:
+  Build-Deploy:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -43,7 +43,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       # Runs a single command using the runners shell
-      - name: Build services
+      - name: Build and deploy services
         env:
           DOCKER_BUILDKIT: 1
           BACKEND_IMAGE_NAME: gtldhawalgandhi/prod-backend-image:v0.0.1
