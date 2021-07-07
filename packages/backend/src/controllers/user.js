@@ -131,7 +131,7 @@ const loginUser = async (req, res) => {
       const token = jwt.sign({ id: user?.[0]?._id?.toString() }, 'randomTokenSecretKey123', { expiresIn: '2h' });
 
       res.header('authorization', token).json({
-        status: 'ok',
+        status: 'okkk',
       });
 
       return;
