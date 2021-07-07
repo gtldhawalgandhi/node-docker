@@ -35,3 +35,25 @@ jobs:
           STAGE: build
         run: |
           docker-compose -f docker-compose.$STAGE.yml build --no-cache lint-test
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Runs a single command using the runners shell
+      - name: Build services
+        env:
+          DOCKER_BUILDKIT: 1
+          BACKEND_IMAGE_NAME: gtldhawalgandhi/prod-backend-image:v0.0.1
+          REALTIME_IMAGE_NAME: gtldhawalgandhi/prod-realtime-image:v0.0.1
+          GRAPH_IMAGE_NAME: gtldhawalgandhi/prod-graph-image:v0.0.1
+          STAGE: build
+        run: |
+          docker-compose -f ./docker-compose.$STAGE.yml build --no-cache realtime-svc
+          docker-compose -f ./docker-compose.$STAGE.yml build backend-svc
+          docker-compose -f ./docker-compose.$STAGE.yml build graph-svc
+          docker push $BACKEND_IMAGE_NAME
+          docker push $REALTIME_IMAGE_NAME
+          docker push $GRAPH_IMAGE_NAME
