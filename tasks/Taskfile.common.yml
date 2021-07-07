@@ -174,3 +174,24 @@ tasks:
   build-and-run:
     - task -t Taskfile.build.yml STAGE=build common:build-stack
     - task -t Taskfile.prod.yml STAGE=prod common:compose-up
+  
+  terraform-deploy:
+    dir: "../scripts/terraform"
+    cmds:
+      - terraform init
+      - terraform fmt
+      - terraform validate
+      - terraform plan -out tfplan
+      - terraform show -json tfplan | jq '.' > tfplan.json
+      - terraform apply tfplan
+  
+  terraform-deploy-reprovision:
+    dir: "../scripts/terraform"
+    cmds:
+      - terraform taint null_resource.remoteExecProvisioning
+      - task: terraform-deploy
+  
+  terraform-ssh:
+    dir: "../scripts/terraform"
+    cmds:
+      - ssh -i $(terraform output -raw private_ssh_key) $(terraform output -raw vm_user)@$(terraform output -raw vm_ip)
